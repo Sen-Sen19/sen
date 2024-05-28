@@ -17,7 +17,7 @@
         gap: 20px;
         
     }
-
+ 
     .column {
     flex: 1;
     padding: 10px;
