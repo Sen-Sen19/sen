@@ -22,9 +22,9 @@
     flex: 1;
     padding: 10px;
     border-radius: 8px;
-    border: 2px solid #20c997; /* Initial green border */
-    background-color: rgba(169, 169, 169, 0.1); /* Semi-transparent gray */
-    opacity: 0.9; /* Adjust opacity for glass-like effect */
+    border: 2px solid #20c997; 
+    background-color: rgba(169, 169, 169, 0.1); 
+    opacity: 0.9; 
 }
 
     .column h2 {
