@@ -277,7 +277,7 @@ function addTask(type) {
             return;
     }
 
-    
+
     const inputValue = input.value.trim();
     if (inputValue === '') return;
 
@@ -298,6 +298,7 @@ function createTaskElement(taskText, type) {
     const span = document.createElement('span');
     span.textContent = taskText;
     task.appendChild(span);
+    
 
     if (type !== 'completed') {
         const actions = document.createElement('div');
