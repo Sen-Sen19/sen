@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Questions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        .result-container {
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .question {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .answer {
+            margin-left: 20px; /* Adjust indentation as needed */
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Questions</h1>
+        <form id="searchForm">
+            <input type="text" id="searchInput" name="searchInput" placeholder="Type a word..." required>
+            <button type="submit">Search</button>
+        </form>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const searchTerm = document.getElementById('searchInput').value;
+            const resultsDiv = document.getElementById('results');
+
+            // Clear previous results
+            resultsDiv.innerHTML = '';
+
+            // Show loading message
+            resultsDiv.textContent = 'Searching...';
+
+            // AJAX request to the backend endpoint
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'search.php', true);
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                try {
+                    if (xhr.status === 200) {
+                        const contentType = xhr.getResponseHeader('Content-Type');
+                        if (contentType && contentType.includes('application/json')) {
+                            const data = JSON.parse(xhr.responseText);
+                            if (data.error) {
+                                resultsDiv.textContent = 'Error: ' + data.error;
+                            } else if (data.length > 0) {
+                                resultsDiv.innerHTML = ''; // Clear loading message
+                                data.forEach(item => {
+                                    // Create a container for each question and answer pair
+                                    const resultContainer = document.createElement('div');
+                                    resultContainer.classList.add('result-container');
+
+                                    // Question element
+                                    const question = document.createElement('div');
+                                    question.classList.add('question');
+                                    question.textContent = `Question: ${item.question}`;
+
+                                    // Answer element
+                                    const answer = document.createElement('div');
+                                    answer.classList.add('answer');
+                                    answer.textContent = `Answer: ${item.answer}`;
+
+                                    // Append question and answer to container
+                                    resultContainer.appendChild(question);
+                                    resultContainer.appendChild(answer);
+
+                                    // Append result container to results div
+                                    resultsDiv.appendChild(resultContainer);
+                                });
+                            } else {
+                                resultsDiv.textContent = 'No results found.';
+                            }
+                        } else {
+                            throw new Error('Invalid response format.');
+                        }
+                    } else {
+                        throw new Error(`HTTP status ${xhr.status}`);
+                    }
+                } catch (e) {
+                    console.error('An error occurred:', e);
+                    resultsDiv.textContent = 'An error occurred while processing results.';
+                }
+            };
+            xhr.onerror = function() {
+                resultsDiv.textContent = 'An error occurred while making the request.';
+            };
+            xhr.send(`searchTerm=${encodeURIComponent(searchTerm)}`);
+        });
+    </script>
+</body>
+</html>
