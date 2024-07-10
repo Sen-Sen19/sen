@@ -96,7 +96,7 @@
             <button id="reset-highscore-btn">Reset High Score</button>
         </div>
     </div>
-    <script>
+    <script> 
     const words = [
         "abacus", "aberration", "abominable", "abundance", "accommodate",
         "acquaintance", "adversary", "aesthetic", "allegiance", "amphibious",
