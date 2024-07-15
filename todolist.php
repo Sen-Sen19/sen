@@ -130,11 +130,79 @@
         border: none;
         border-radius: 50%;
     }
+
+/* Modal styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Set width to 80% of viewport */
+  max-width: 500px; /* Maximum width */
+  height: 80%; /* Set height to 80% of viewport */
+  max-height: 500px; /* Maximum height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Close Button */
+.close {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  align-self: flex-end;
+  margin-bottom: 10px;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Textarea for notepad */
+#notepadTextArea {
+  width: 100%;
+  height: 80%; /* Adjust as needed */
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 16px;
+  resize: none; /* Prevent resizing */
+}
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 2px; /* Adjust margin as needed */
+}
+
+
+    
 </style>
 </head>
 <body>
 <div class="container2">
-    <h2 style="margin-left:850px">To-Do List</h2>
+<button onclick="openNotepadModal()" title="Open Notepad">
+    📝
+</button>
+    <h2 style="margin-left:810px">To-Do List</h2>
     <div class="color-picker-container">
         <input type="color" id="colorPicker" class="color-picker" style="margin-left:800px">
     </div>
@@ -172,7 +240,14 @@
 </div>
 
 
-
+<div id="notepadModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>NOTES</h2>
+    <textarea id="notepadTextArea" rows="10" style="width: 100%;"></textarea>
+  </div>
+</div>
 <script>
 // Function to add a new task
 function addTask(type) {
@@ -314,6 +389,13 @@ function applyColorPreferences(color) {
     const buttons = document.querySelectorAll('.input-container button');
     buttons.forEach(button => {
         button.style.backgroundColor = color;
+        // Determine text color for buttons based on background luminance
+        const luminance = calculateLuminance(color);
+        if (luminance > 0.5) {
+            button.style.color = '#333'; // Dark color for light background
+        } else {
+            button.style.color = '#fff'; // Light color for dark background
+        }
     });
 
     document.querySelector('.container2').style.borderColor = color;
@@ -329,6 +411,28 @@ function applyColorPreferences(color) {
     completedTasks.forEach(task => {
         task.style.color = color;
     });
+
+    // Determine header text color based on background luminance
+    const header = document.querySelector('.modal-content h2');
+    const luminance = calculateLuminance(color);
+    if (luminance > 0.5) {
+        header.style.color = '#333'; // Dark color for light background
+    } else {
+        header.style.color = '#fff'; // Light color for dark background
+    }
+
+    // Apply color to modal content background
+    const modalContent = document.querySelector('.modal-content');
+    modalContent.style.backgroundColor = color;
+}
+
+// Calculate luminance of a color
+function calculateLuminance(color) {
+    const rgb = color.substring(1); // Remove #
+    const r = parseInt(rgb.substr(0, 2), 16) / 255;
+    const g = parseInt(rgb.substr(2, 2), 16) / 255;
+    const b = parseInt(rgb.substr(4, 2), 16) / 255;
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b; // Calculate relative luminance
 }
 
 // Handle color changes
@@ -338,6 +442,70 @@ document.getElementById('colorPicker').addEventListener('input', function () {
     saveTasksToStorage(); // Save color preference to localStorage
 });
 
+// Handle color changes
+document.getElementById('colorPicker').addEventListener('input', function () {
+    const selectedColor = this.value;
+    applyColorPreferences(selectedColor);
+    saveTasksToStorage(); // Save color preference to localStorage
+});
+
+
+
+// Function to open the notepad modal
+function openNotepadModal() {
+    const modal = document.getElementById('notepadModal');
+    const notepadTextArea = document.getElementById('notepadTextArea');
+
+    // Load saved content from localStorage
+    const savedContent = localStorage.getItem('notepadContent');
+    if (savedContent) {
+        notepadTextArea.value = savedContent;
+    } else {
+        notepadTextArea.value = '';
+    }
+
+    modal.style.display = 'block';
+
+    // Save content on modal close
+    modal.querySelector('.close').onclick = function() {
+        modal.style.display = 'none';
+        saveNotepadContent(notepadTextArea.value);
+    };
+
+    // Prevent modal from closing on click outside the modal content
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'block'; // Ensures modal remains open
+        }
+    };
+}
+
+
+
+// Function to close the notepad modal
+function closeNotepadModal() {
+    const modal = document.getElementById('notepadModal');
+    modal.style.display = 'none';
+}
+
+// Function to save notepad content to localStorage
+function saveNotepadContent(content) {
+    localStorage.setItem('notepadContent', content);
+}
+
+// Function to load notepad content from localStorage
+function loadNotepadContent() {
+    const notepadTextArea = document.getElementById('notepadTextArea');
+    const savedContent = localStorage.getItem('notepadContent');
+    if (savedContent) {
+        notepadTextArea.value = savedContent;
+    }
+}
+
+// Load notepad content on page load
+document.addEventListener('DOMContentLoaded', function () {
+    loadNotepadContent();
+});
 
 </script>
 </body>
