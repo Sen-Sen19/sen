@@ -15,15 +15,17 @@
     .container {
         display: flex;
         gap: 20px;
+        
     }
 
     .column {
-        flex: 1;
-     
-        padding: 10px;
-        border-radius: 8px;
-        border: 2px solid #20c997; /* Initial green border */
-    }
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #20c997; /* Initial green border */
+    background-color: rgba(169, 169, 169, 0.1); /* Semi-transparent gray */
+    opacity: 0.9; /* Adjust opacity for glass-like effect */
+}
 
     .column h2 {
         text-align: center;
@@ -36,17 +38,20 @@
     .input-container {
         display: flex;
         margin-top: 10px;
+        
     }
 
     .input-container input[type="text"] {
-        flex: 1;
-        padding: 8px;
-        font-size: 16px;
-        border: none;
-        border-radius: 4px 0 0 4px;
-        background-color: #9da09f; /* Darker background color */
-        color: #fff; /* Text color */
-    }
+    flex: 1;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid black; /* Initial green border */
+
+    border-radius: 4px 0 0 4px;
+    background-color: rgba(169, 169, 169, 0.1); /* Semi-transparent gray */
+    opacity: 0.9; /* Adjust opacity for glass-like effect */
+    color: #fff; /* Text color */
+}
 
     .input-container button {
         padding: 8px 12px;
@@ -63,7 +68,8 @@
         align-items: center;
         padding: 8px;
         margin-top: 20px;
-        background-color: #555;
+        background-color: rgba(169, 169, 169, 0.1); /* Semi-transparent gray */
+        border: 1px solid black; /* Initial green border */
         border-radius: 4px;
         width: 420px; /* Fixed width */
         word-wrap: break-word; /* Wrap long words */
@@ -206,6 +212,7 @@
     <div class="color-picker-container">
         <input type="color" id="colorPicker" class="color-picker" style="margin-left:800px">
     </div>
+    
 </div>
 
 <div class="container">

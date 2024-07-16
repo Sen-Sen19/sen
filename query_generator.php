@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -80,8 +79,8 @@
             border: 1px solid #ccc;
             margin-top: 10px;
             color: #61dafb;
-            white-space: pre-wrap; /* Allows the query to wrap */
-            overflow-wrap: break-word; /* Handles long queries */
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
         }
 
         .copy-btn {
@@ -97,7 +96,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <h2>Query Generator</h2>
@@ -109,10 +107,11 @@
                     <option value="CREATE_DATABASE">Create Database</option>
                     <option value="CREATE_TABLE">Create Table</option>
                     <option value="ADD_COLUMN">Add Column</option>
+                    <option value="SELECT">Select</option>
                     <option value="INSERT">Insert</option>
                     <option value="UPDATE">Update</option>
                     <option value="DELETE">Delete</option>
-                    <option value="SELECT">Select</option>
+                    <option value="LEFT_JOIN">Left Join</option>
                 </select>
             </div>
 
@@ -129,6 +128,11 @@
             <div class="form-group" id="columnNameGroup">
                 <label for="columnName">Column Name:</label>
                 <input type="text" id="columnName" name="columnName">
+            </div>
+            
+            <div class="form-group" id="columnNameGroup2">
+                <label for="columnName2">Column Name2:</label>
+                <input type="text" id="columnName2" name="columnName2">
             </div>
 
             <div class="form-group" id="columnTypeGroup" style="display: none;">
@@ -160,6 +164,17 @@
                 <input type="text" id="whereValue" name="whereValue">
             </div>
 
+            <div id="joinTableGroup" class="form-group" style="display: none;">
+                <label for="joinTableName">Join Table:</label>
+                <input type="text" id="joinTableName" name="joinTableName">
+
+                <label for="joinValue">Join Value:</label>
+                <input type="text" id="joinValue" name="joinValue">
+
+                <label for="joinValue2">Join Value2:</label>
+                <input type="text" id="joinValue2" name="joinValue2">
+            </div>
+
             <button type="button" onclick="generateQuery()">Generate Query</button>
             <button type="button" class="copy-btn" onclick="copyToClipboard()">Copy Query</button>
         </form>
@@ -167,17 +182,20 @@
         <h3>Generated SQL Query:</h3>
         <div id="queryOutput"></div>
     </div>
+
     <script>
         document.getElementById('operation').addEventListener('change', function () {
             var operation = this.value;
             var whereClause = document.getElementById('whereClause');
             var columnNameGroup = document.getElementById('columnNameGroup');
+            var columnNameGroup2 = document.getElementById('columnNameGroup2');
             var columnTypeGroup = document.getElementById('columnTypeGroup');
             var valueGroup = document.getElementById('valueGroup');
             var selectColumnsGroup = document.getElementById('selectColumnsGroup');
             var tableNameGroup = document.getElementById('tableNameGroup');
-
-            if (operation === 'UPDATE' || operation === 'DELETE' || operation === 'SELECT') {
+            var joinTableGroup = document.getElementById('joinTableGroup');
+            
+            if (operation === 'UPDATE' || operation === 'DELETE' || operation === 'SELECT' || operation === 'LEFT_JOIN') {
                 whereClause.style.display = 'block';
             } else {
                 whereClause.style.display = 'none';
@@ -189,36 +207,71 @@
                 valueGroup.style.display = 'none';
                 selectColumnsGroup.style.display = 'none';
                 tableNameGroup.style.display = 'none';
+                joinTableGroup.style.display = 'none';
             } else if (operation === 'CREATE_TABLE') {
                 columnNameGroup.style.display = 'none';
                 columnTypeGroup.style.display = 'none';
                 valueGroup.style.display = 'none';
                 selectColumnsGroup.style.display = 'none';
                 tableNameGroup.style.display = 'block';
+                joinTableGroup.style.display = 'none';
             } else if (operation === 'ADD_COLUMN') {
                 columnNameGroup.style.display = 'block';
+                columnNameGroup2.style.display = 'block';
                 columnTypeGroup.style.display = 'block';
                 valueGroup.style.display = 'none';
                 selectColumnsGroup.style.display = 'none';
                 tableNameGroup.style.display = 'block';
-            } else if (operation === 'DELETE') {
-                columnNameGroup.style.display = 'none';
-                columnTypeGroup.style.display = 'none';
-                valueGroup.style.display = 'none';
-                selectColumnsGroup.style.display = 'none';
-                tableNameGroup.style.display = 'block';
-            } else if (operation === 'SELECT') {
-                columnNameGroup.style.display = 'none';
-                columnTypeGroup.style.display = 'none';
-                valueGroup.style.display = 'none';
-                selectColumnsGroup.style.display = 'block';
-                tableNameGroup.style.display = 'block';
-            } else {
+                joinTableGroup.style.display = 'none';
+            } else if (operation === 'INSERT') {
                 columnNameGroup.style.display = 'block';
+                columnNameGroup2.style.display = 'none';
                 columnTypeGroup.style.display = 'none';
                 valueGroup.style.display = 'block';
                 selectColumnsGroup.style.display = 'none';
                 tableNameGroup.style.display = 'block';
+                joinTableGroup.style.display = 'none';
+            } else if (operation === 'UPDATE') {
+                columnNameGroup.style.display = 'block';
+                columnNameGroup2.style.display = 'none';
+                columnTypeGroup.style.display = 'none';
+                valueGroup.style.display = 'block';
+                selectColumnsGroup.style.display = 'none';
+                tableNameGroup.style.display = 'block';
+                joinTableGroup.style.display = 'none';
+            } else if (operation === 'DELETE') {
+                columnNameGroup.style.display = 'none';
+                columnNameGroup2.style.display = 'none';
+                columnTypeGroup.style.display = 'none';
+                valueGroup.style.display = 'none';
+                selectColumnsGroup.style.display = 'none';
+                tableNameGroup.style.display = 'block';
+                joinTableGroup.style.display = 'none';
+            } else if (operation === 'SELECT') {
+                columnNameGroup.style.display = 'none';
+                columnNameGroup2.style.display = 'none';
+                columnTypeGroup.style.display = 'none';
+                valueGroup.style.display = 'none';
+                selectColumnsGroup.style.display = 'block';
+                tableNameGroup.style.display = 'block';
+                joinTableGroup.style.display = 'none';
+            } else if (operation === 'LEFT_JOIN') {
+                whereClause.style.display = 'none';
+                columnNameGroup.style.display = 'block';
+                columnNameGroup2.style.display = 'block';
+                columnTypeGroup.style.display = 'none';
+                valueGroup.style.display = 'none';
+                selectColumnsGroup.style.display = 'none';
+                tableNameGroup.style.display = 'block';
+                joinTableGroup.style.display = 'block';
+            } else {
+                columnNameGroup.style.display = 'block';
+                columnNameGroup2.style.display = 'none';
+                columnTypeGroup.style.display = 'none';
+                valueGroup.style.display = 'block';
+                selectColumnsGroup.style.display = 'none';
+                tableNameGroup.style.display = 'block';
+                joinTableGroup.style.display = 'none';
             }
         });
 
@@ -227,11 +280,15 @@
             var databaseName = document.getElementById('databaseName').value;
             var tableName = document.getElementById('tableName').value;
             var columnName = document.getElementById('columnName').value;
+            var columnName2 = document.getElementById('columnName2').value;
             var columnType = document.getElementById('columnType').value;
             var value = document.getElementById('value').value;
             var selectColumns = document.getElementById('selectColumns').value;
             var whereColumn = document.getElementById('whereColumn').value;
             var whereValue = document.getElementById('whereValue').value;
+            var joinTableName = document.getElementById('joinTableName').value;
+            var joinValue = document.getElementById('joinValue').value;
+            var joinValue2 = document.getElementById('joinValue2').value;
 
             var query = '';
 
@@ -249,6 +306,9 @@
                 query = `DELETE FROM [${databaseName}].[dbo].[${tableName}] WHERE [${whereColumn}] = '${whereValue}'`;
             } else if (operation === 'SELECT') {
                 query = `SELECT ${selectColumns} FROM [${databaseName}].[dbo].[${tableName}] WHERE [${whereColumn}] = '${whereValue}'`;
+            } else if (operation === 'LEFT_JOIN') {
+                query = `SELECT ${tableName}.${columnName}, ${tableName}.${columnName2}, ${joinTableName}.${joinValue} 
+                         FROM ${tableName} LEFT JOIN ${joinTableName} ON ${tableName}.${joinValue2} = ${joinTableName}.${joinValue2};`;
             }
 
             document.getElementById('queryOutput').innerText = query;
@@ -267,5 +327,4 @@
         }
     </script>
 </body>
-
 </html>
