@@ -1,0 +1,89 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #282c34;
+    color: #61dafb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #1c1e22;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    width: 400px;
+}
+
+h2,
+h3 {
+    text-align: center;
+    color: #61dafb;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    margin-bottom: 5px;
+    color: #61dafb;
+}
+
+input,
+select,
+button {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input,
+select {
+    background-color: #333;
+    color: #61dafb;
+}
+
+button {
+    background-color: #20c997;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 20px;
+    border: none;
+}
+
+button:hover {
+    background-color: #1ba87a;
+}
+
+#queryOutput {
+    background-color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    color: #61dafb;
+    white-space: pre-wrap; /* Allows the query to wrap */
+    overflow-wrap: break-word; /* Handles long queries */
+}
+
+.copy-btn {
+    background-color: #61dafb;
+    color: #282c34;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.copy-btn:hover {
+    background-color: #1ba87a;
+    color: #fff;
+}
