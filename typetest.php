@@ -55,7 +55,7 @@
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
-            background-color: #121212;
+            background-color: #007bff;
             color: white;
             border: none;
             border-radius: 4px;
@@ -92,8 +92,8 @@
             <p>Your speed: <span id="speed"></span> WPM</p>
             <input type="text" id="name-input" placeholder="Enter your name" class="hidden">
             <button id="submit-btn" class="hidden">Submit</button>
-            <button id="restart-btn" class="hidden">Restart </button>
-           
+            <button id="restart-btn" class="hidden">Restart Test</button>
+            <button id="reset-highscore-btn">Reset High Score</button>
         </div>
     </div>
     <script>
