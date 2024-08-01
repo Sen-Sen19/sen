@@ -39,11 +39,10 @@
         }
 
         .cell.yellow {
-            background-color: #ffeb3b; /* Bright yellow */
+            background-color: #ffeb3b; 
         }
-
         .cell.red {
-            background-color: #f44336; /* Bright red */
+            background-color: #f44336; 
         }
 
         h1 {
