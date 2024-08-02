@@ -3,154 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dama Game</title>
+    <title>2048 Game</title>
     <style>
-        .board {
-            display: grid;
-            grid-template-columns: repeat(8, 50px);
-            grid-template-rows: repeat(8, 50px);
-            gap: 2px;
-        }
-
-        .tile {
-            width: 50px;
-            height: 50px;
-            background-color: #eee;
+        /* CSS styles for the game */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-
-        .piece {
-            width: 80%;
-            height: 80%;
-            border-radius: 50%;
+        
+        .game-container {
+            background-color: #bbada0;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            width: 240px; /* Adjust width as needed */
+            height: 240px; /* Set the height equal to the width */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-
-        .piece-black {
-            background-color: black;
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 240px;
+            margin: 0 auto;
         }
-
-        .piece-white {
-            background-color: white;
+        
+        .tile {
+            background-color: #cdc1b4;
+            color: #776e65;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            width: 70px; /* Set width and height to create square tiles */
+            height: 70px; /* Set width and height to create square tiles */
+        }
+        
+        .game-info {
+            margin-top: 20px;
+        }
+        
+        .game-info p {
+            margin: 5px 0;
+            font-size: 18px;
+        }
+        
+        #game-over {
+            color: #776e65;
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="board">
-        <!-- Board tiles and pieces will be dynamically created using JavaScript -->
+    
+    <div class="game-container">
+    <p> </p>
+        <div class="game-board" id="gameBoard">
+            
+            <!-- Grid cells will be dynamically generated here -->
+        </div>
+        
+        <div class="game-info">
+            <p>Score: <span id="score">0</span></p>
+            <p id="game-over" style="display: none;">Game Over!</p>
+        </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const board = document.querySelector('.board');
-            let currentPlayer = 'black'; // Player to start
+        // JavaScript logic for 2048 game
+        let board = [];
+        let score = 0;
+        const size = 3; // Size of the board (3x3)
 
-            // Initialize the board
-            function initializeBoard() {
-                for (let row = 0; row < 8; row++) {
-                    for (let col = 0; col < 8; col++) {
-                        const tile = document.createElement('div');
-                        tile.classList.add('tile');
-                        tile.dataset.row = row;
-                        tile.dataset.col = col;
-                        if ((row + col) % 2 === 0) {
-                            tile.classList.add('light');
-                        } else {
-                            tile.classList.add('dark');
+        // Initialize the game board
+        function initializeBoard() {
+            for (let i = 0; i < size; i++) {
+                board[i] = [];
+                for (let j = 0; j < size; j++) {
+                    board[i][j] = 0;
+                }
+            }
+            addNewTile();
+            addNewTile();
+            updateBoard();
+        }
+
+        // Function to add a new tile (either 2 or 4) to a random empty cell
+        function addNewTile() {
+            let options = [];
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    if (board[i][j] === 0) {
+                        options.push({ x: i, y: j });
+                    }
+                }
+            }
+            if (options.length > 0) {
+                let spot = options[Math.floor(Math.random() * options.length)];
+                board[spot.x][spot.y] = Math.random() < 0.9 ? 2 : 4;
+            }
+        }
+
+        // Function to update the game board and UI
+        function updateBoard() {
+            let gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    let tileValue = board[i][j];
+                    let tile = document.createElement('div');
+                    tile.classList.add('tile');
+                    if (tileValue !== 0) {
+                        tile.textContent = tileValue;
+                        tile.style.backgroundColor = getTileColor(tileValue);
+                    }
+                    gameBoard.appendChild(tile);
+                }
+            }
+            document.getElementById('score').textContent = score;
+            checkGameOver();
+        }
+
+        // Function to get tile color based on its value
+        function getTileColor(value) {
+            // Define colors for different tile values (adjust as needed)
+            switch (value) {
+                case 2: return '#eee4da';
+                case 4: return '#ede0c8';
+                case 8: return '#f2b179';
+                case 16: return '#f59563';
+                case 32: return '#f67c5f';
+                case 64: return '#f65e3b';
+                case 128: return '#edcf72';
+                case 256: return '#edcc61';
+                case 512: return '#9c0';
+                case 1024: return '#33b5e5';
+                case 2048: return '#09c';
+                default: return '#ccc0b3';
+            }
+        }
+
+        // Function to handle key presses (ASWD controls)
+        document.addEventListener('keydown', function(event) {
+            let moved = false;
+            switch (event.key) {
+                case 'a':
+                    moved = moveLeft();
+                    break;
+                case 's':
+                    moved = moveDown();
+                    break;
+                case 'w':
+                    moved = moveUp();
+                    break;
+                case 'd':
+                    moved = moveRight();
+                    break;
+            }
+            if (moved) {
+                addNewTile();
+                updateBoard();
+            }
+        });
+
+        // Function to move tiles left
+        function moveLeft() {
+            let moved = false;
+            for (let i = 0; i < size; i++) {
+                for (let j = 1; j < size; j++) {
+                    if (board[i][j] !== 0) {
+                        let k = j;
+                        while (k > 0 && board[i][k - 1] === 0) {
+                            k--;
                         }
-                        board.appendChild(tile);
+                        if (k > 0 && board[i][k - 1] === board[i][j]) {
+                            board[i][k - 1] *= 2;
+                            score += board[i][k - 1];
+                            board[i][j] = 0;
+                            moved = true;
+                        } else if (k !== j) {
+                            board[i][k] = board[i][j];
+                            board[i][j] = 0;
+                            moved = true;
+                        }
                     }
                 }
             }
+            return moved;
+        }
 
-            // Add pieces to the board
-            function addPieces() {
-                // Placing initial black pieces
-                placePiece(0, 1, 'black');
-                placePiece(0, 3, 'black');
-                placePiece(0, 5, 'black');
-                placePiece(0, 7, 'black');
-                placePiece(1, 0, 'black');
-                placePiece(1, 2, 'black');
-                placePiece(1, 4, 'black');
-                placePiece(1, 6, 'black');
-                placePiece(2, 1, 'black');
-                placePiece(2, 3, 'black');
-                placePiece(2, 5, 'black');
-                placePiece(2, 7, 'black');
-
-                // Placing initial white pieces
-                placePiece(5, 0, 'white');
-                placePiece(5, 2, 'white');
-                placePiece(5, 4, 'white');
-                placePiece(5, 6, 'white');
-                placePiece(6, 1, 'white');
-                placePiece(6, 3, 'white');
-                placePiece(6, 5, 'white');
-                placePiece(6, 7, 'white');
-                placePiece(7, 0, 'white');
-                placePiece(7, 2, 'white');
-                placePiece(7, 4, 'white');
-                placePiece(7, 6, 'white');
-            }
-
-            // Function to place a piece on a specific tile
-            function placePiece(row, col, color) {
-                const tile = document.querySelector(`.tile[data-row="${row}"][data-col="${col}"]`);
-                if (tile) {
-                    const piece = document.createElement('div');
-                    piece.classList.add('piece', `piece-${color}`);
-                    tile.appendChild(piece);
-                }
-            }
-
-            // Handle player's move
-            function handlePlayerMove(tile) {
-                if (currentPlayer === 'black') {
-                    // Place black piece
-                    if (!tile.querySelector('.piece')) {
-                        const piece = document.createElement('div');
-                        piece.classList.add('piece', 'piece-black');
-                        tile.appendChild(piece);
-                        currentPlayer = 'white'; // Switch turn to white player
+        // Function to move tiles right
+        function moveRight() {
+            let moved = false;
+            for (let i = 0; i < size; i++) {
+                for (let j = size - 2; j >= 0; j--) {
+                    if (board[i][j] !== 0) {
+                        let k = j;
+                        while (k < size - 1 && board[i][k + 1] === 0) {
+                            k++;
+                        }
+                        if (k < size - 1 && board[i][k + 1] === board[i][j]) {
+                            board[i][k + 1] *= 2;
+                            score += board[i][k + 1];
+                            board[i][j] = 0;
+                            moved = true;
+                        } else if (k !== j) {
+                            board[i][k] = board[i][j];
+                            board[i][j] = 0;
+                            moved = true;
+                        }
                     }
                 }
             }
+            return moved;
+        }
 
-            // AI opponent's move
-            function makeAIMove() {
-                // Basic AI logic - make a random move for the opponent
-                const tiles = Array.from(document.querySelectorAll('.tile'));
-                const emptyTiles = tiles.filter(tile => !tile.querySelector('.piece'));
-
-                if (emptyTiles.length > 0) {
-                    const randomTile = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
-                    const aiPiece = document.createElement('div');
-                    aiPiece.classList.add('piece', 'piece-white');
-                    randomTile.appendChild(aiPiece);
-                    currentPlayer = 'black'; // Switch turn back to black player after AI move
+        // Function to move tiles up
+        function moveUp() {
+            let moved = false;
+            for (let j = 0; j < size; j++) {
+                for (let i = 1; i < size; i++) {
+                    if (board[i][j] !== 0) {
+                        let k = i;
+                        while (k > 0 && board[k - 1][j] === 0) {
+                            k--;
+                        }
+                        if (k > 0 && board[k - 1][j] === board[i][j]) {
+                            board[k - 1][j] *= 2;
+                           
+                            score += board[k - 1][j];
+                            board[i][j] = 0;
+                            moved = true;
+                        } else if (k !== i) {
+                            board[k][j] = board[i][j];
+                            board[i][j] = 0;
+                            moved = true;
+                        }
+                    }
                 }
             }
+            return moved;
+        }
 
-            // Initialize the game
-            function initGame() {
-                initializeBoard();
-                addPieces();
-
-                // Event listener for player's move (click event on tiles)
-                board.addEventListener('click', function(event) {
-                    const tile = event.target.closest('.tile');
-                    if (tile) {
-                        handlePlayerMove(tile);
-                        // After player moves, make AI move
-                        makeAIMove();
+        // Function to move tiles down
+        function moveDown() {
+            let moved = false;
+            for (let j = 0; j < size; j++) {
+                for (let i = size - 2; i >= 0; i--) {
+                    if (board[i][j] !== 0) {
+                        let k = i;
+                        while (k < size - 1 && board[k + 1][j] === 0) {
+                            k++;
+                        }
+                        if (k < size - 1 && board[k + 1][j] === board[i][j]) {
+                            board[k + 1][j] *= 2;
+                            score += board[k + 1][j];
+                            board[i][j] = 0;
+                            moved = true;
+                        } else if (k !== i) {
+                            board[k][j] = board[i][j];
+                            board[i][j] = 0;
+                            moved = true;
+                        }
                     }
-                });
+                }
             }
+            return moved;
+        }
 
-            // Start the game
-            initGame();
+     
+        function checkGameOver() {
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    if (board[i][j] === 0) {
+                        return false;
+                    }
+                    if (i > 0 && board[i][j] === board[i - 1][j]) {
+                        return false;
+                    }
+                    if (j > 0 && board[i][j] === board[i][j - 1]) {
+                        return false;
+                    }
+                }
+            }
+            document.getElementById('game-over').style.display = 'block';
+            return true;
+        }
+
+        // Function to restart the game
+        function restartGame() {
+            board = [];
+            score = 0;
+            document.getElementById('game-over').style.display = 'none';
+            initializeBoard();
+        }
+
+        // Initialize the game when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBoard();
         });
     </script>
 </body>

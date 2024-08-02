@@ -69,7 +69,7 @@
     const buttons = document.querySelectorAll(".game-button");
     let intervalId = null;
     let score = 0;
-    let highScore = localStorage.getItem("highScore") || 0; // Retrieve high score from localStorage
+    let highScore = localStorage.getItem("highScore") || 0;
     const scoreDisplay = document.getElementById("score");
     const highScoreDisplay = document.getElementById("high-score");
     const message = document.getElementById("message");
