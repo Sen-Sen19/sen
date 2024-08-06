@@ -181,7 +181,7 @@
             }
         });
 
-        // Function to move tiles left
+
         function moveLeft() {
             let moved = false;
             for (let i = 0; i < size; i++) {
@@ -207,7 +207,7 @@
             return moved;
         }
 
-        // Function to move tiles right
+    
         function moveRight() {
             let moved = false;
             for (let i = 0; i < size; i++) {
@@ -233,7 +233,6 @@
             return moved;
         }
 
-        // Function to move tiles up
         function moveUp() {
             let moved = false;
             for (let j = 0; j < size; j++) {
