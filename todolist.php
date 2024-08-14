@@ -277,6 +277,7 @@ function addTask(type) {
             return;
     }
 
+    
     const inputValue = input.value.trim();
     if (inputValue === '') return;
 
