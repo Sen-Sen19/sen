@@ -106,6 +106,7 @@
                 ctx.stroke();
                 ctx.closePath();
             }
+            
         }
 
         function update() {
