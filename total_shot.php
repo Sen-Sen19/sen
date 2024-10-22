@@ -96,15 +96,23 @@ trdValues.forEach(trdValue => {
 
 
 SELECT 
-    'Subaru' AS car_model,
+    CASE 
+        WHEN f.[car_model] = 'suzuki old' THEN 'Suzuki Old'
+        ELSE 'Other' 
+    END AS car_model,
     '${trdValue}' AS process,
-    SUM(f.[${trdValue}] * p.[first_month]) AS first_total_shots,
-    SUM(f.[${trdValue}] * p.[second_month]) AS second_total_shots,
-    SUM(f.[${trdValue}] * p.[third_month]) AS third_total_shots
+    SUM(f.${trdValue} * p.[first_month]) AS first_total_shots,
+    SUM(f.${trdValue} * p.[second_month]) AS second_total_shots,
+    SUM(f.${trdValue} * p.[third_month]) AS third_total_shots
 FROM [live_mrcs_db].[dbo].[first_process] f
 JOIN [live_mrcs_db].[dbo].[plan_2] p ON f.[base_product] = p.[base_product]
-WHERE f.[car_model] = 'Subaru'
-GROUP BY f.[car_model] 
+WHERE f.[car_model] = 'suzuki old'
+GROUP BY 
+    CASE 
+        WHEN f.[car_model] = 'suzuki old' THEN 'Suzuki Old'
+        ELSE 'Other' 
+    END
+
 
 
 
