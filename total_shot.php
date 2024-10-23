@@ -95,6 +95,9 @@ trdValues.forEach(trdValue => {
                 const sqlQuery = `
 
 
+
+
+                
 SELECT 
     CASE 
         WHEN f.[car_model] = 'suzuki old' THEN 'Suzuki Old'
