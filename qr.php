@@ -22,7 +22,7 @@
             width: 100%;
             max-width: 600px;
             height: auto;
-            display: none; /* Hide the QR reader initially */
+            display: none; 
         }
 
         #qr-result {
@@ -47,6 +47,7 @@
     </style>
 </head>
 <body>
+    
     <div id="scanner-container">
         <button id="start-scanner">Start QR Scanner</button>
         <div id="qr-reader"></div>
