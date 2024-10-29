@@ -63,6 +63,8 @@
             console.error(`QR Code scan error: ${errorMessage}`);
         }
 
+
+        
         function handleStartScanner() {
             if (typeof Html5Qrcode === 'undefined') {
                 console.error('Html5Qrcode library not loaded');
