@@ -30,6 +30,7 @@
 }
 
 .sudoku-grid input {
+    
     width: 40px;
     height: 40px;
     font-size: 18px;
