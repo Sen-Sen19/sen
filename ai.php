@@ -3,136 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinball Game</title>
+    <title>Draggable Cube with Physics</title>
     <style>
         body {
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #222;
+            overflow: hidden;
         }
-        #gameCanvas {
-            background-color: #000;
-            border: 2px solid white;
-        }
-        .paddle {
-            width: 100px;
-            height: 20px;
-            background-color: #fff;
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .ball {
-            width: 15px;
-            height: 15px;
-            background-color: red;
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        canvas {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="600" height="400"></canvas>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        // Import Matter.js components
+const { Engine, Render, Runner, Bodies, Composite, Mouse, MouseConstraint } = Matter;
 
-        const paddleWidth = 100;
-        const paddleHeight = 20;
-        const ballRadius = 7;
+// Create the engine and world
+const engine = Engine.create();
+const world = engine.world;
 
-        let ballX = canvas.width / 2;
-        let ballY = canvas.height / 2;
-        let ballSpeedX = 4;
-        let ballSpeedY = -4;
+// Create a renderer
+const render = Render.create({
+    element: document.body,
+    engine: engine,
+    options: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        wireframes: false,
+        background: "#fafafa"
+    }
+});
 
-        let paddleX = (canvas.width - paddleWidth) / 2;
-        let paddleSpeed = 0;
+// Run the renderer and physics engine
+Render.run(render);
+const runner = Runner.create();
+Runner.run(runner, engine);
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'a' || e.key === 'A') {
-                paddleSpeed = -5;
-            } else if (e.key === 'd' || e.key === 'D') {
-                paddleSpeed = 5;
-            }
-        });
+// Add a draggable cube
+const cube = Bodies.rectangle(400, 200, 100, 100, {
+    render: {
+        fillStyle: "blue",
+        strokeStyle: "black",
+        lineWidth: 2
+    }
+});
+Composite.add(world, cube);
 
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'a' || e.key === 'A' || e.key === 'd' || e.key === 'D') {
-                paddleSpeed = 0;
-            }
-        });
+// Add ground
+const ground = Bodies.rectangle(window.innerWidth / 2, window.innerHeight - 50, window.innerWidth, 50, {
+    isStatic: true,
+    render: {
+        fillStyle: "green"
+    }
+});
+Composite.add(world, ground);
 
-        function drawBall() {
-            ctx.beginPath();
-            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = 'red';
-            ctx.fill();
-            ctx.closePath();
+// Add Mouse Control
+const mouse = Mouse.create(render.canvas);
+const mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: {
+        stiffness: 0.2,
+        render: {
+            visible: false
         }
+    }
+});
+Composite.add(world, mouseConstraint);
 
-        function drawPaddle() {
-            ctx.beginPath();
-            ctx.rect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
-            ctx.fillStyle = 'white';
-            ctx.fill();
-            ctx.closePath();
-        }
+// Resize the canvas and ground on window resize
+window.addEventListener("resize", () => {
+    render.canvas.width = window.innerWidth;
+    render.canvas.height = window.innerHeight;
 
-        function updateBall() {
-            ballX += ballSpeedX;
-            ballY += ballSpeedY;
+    Matter.Body.setPosition(ground, { x: window.innerWidth / 2, y: window.innerHeight - 50 });
+    Matter.Body.setVertices(ground, [
+        { x: 0, y: window.innerHeight - 50 },
+        { x: window.innerWidth, y: window.innerHeight - 50 },
+        { x: window.innerWidth, y: window.innerHeight },
+        { x: 0, y: window.innerHeight }
+    ]);
+});
 
-            if (ballX + ballRadius > canvas.width || ballX - ballRadius < 0) {
-                ballSpeedX = -ballSpeedX;
-            }
-            if (ballY - ballRadius < 0) {
-                ballSpeedY = -ballSpeedY;
-            }
-
-            if (ballY + ballRadius > canvas.height - paddleHeight - 10 &&
-                ballX > paddleX && ballX < paddleX + paddleWidth) {
-                ballSpeedY = -ballSpeedY;
-            }
-
-            if (ballY + ballRadius > canvas.height) {
-                ballX = canvas.width / 2;
-                ballY = canvas.height / 2;
-                ballSpeedX = 4;
-                ballSpeedY = -4;
-            }
-        }
-
-        function updatePaddle() {
-            paddleX += paddleSpeed;
-            if (paddleX < 0) {
-                paddleX = 0;
-            }
-            if (paddleX + paddleWidth > canvas.width) {
-                paddleX = canvas.width - paddleWidth;
-            }
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBall();
-            drawPaddle();
-            updateBall();
-            updatePaddle();
-
-            requestAnimationFrame(draw);
-        }
-
-        draw();
     </script>
 </body>
 </html>

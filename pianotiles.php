@@ -63,7 +63,7 @@
             height: 5px;
             background-color: red;
         }
-    </style>
+    </style> 
 </head>
 <body>
     <div class="game-container">
