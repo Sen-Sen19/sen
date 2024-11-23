@@ -37,29 +37,25 @@
     let velocity = 0;
     let isFalling = false;
 
-    // Simple state for the model: [x, y, armAngle, legAngle, velocity]
+
     const state = [bodyX, bodyY, armAngle, legAngle, velocity];
     
-    // Neural network model for reinforcement learning
     const model = tf.sequential();
-    model.add(tf.layers.dense({units: 16, activation: 'relu', inputShape: [5]})); // State: body position, limb angles, velocity
-    model.add(tf.layers.dense({units: 4, activation: 'linear'})); // Actions: change limb angles
+    model.add(tf.layers.dense({units: 16, activation: 'relu', inputShape: [5]})); 
+    model.add(tf.layers.dense({units: 4, activation: 'linear'})); 
 
     model.compile({optimizer: 'adam', loss: 'meanSquaredError'});
 
-    // Simple training data (you'd replace this with your learning loop)
     const trainingData = tf.tensor2d([[0, 0, 0, 0, 0]]);
     const targetData = tf.tensor2d([[0, 0, 0, 0]]);
 
-    // Draw the character on the canvas
     function drawCharacter() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas on every frame
+      ctx.clearRect(0, 0, canvas.width, canvas.height); 
 
-      // Body
+   
       ctx.fillStyle = '#ff6600';
       ctx.fillRect(bodyX - bodyWidth / 2, bodyY - bodyHeight / 2, bodyWidth, bodyHeight);
 
-      // Head
       ctx.beginPath();
       ctx.arc(bodyX, bodyY - bodyHeight / 2 - headRadius, headRadius, 0, Math.PI * 2);
       ctx.fillStyle = '#ffcc00';
@@ -67,43 +63,40 @@
 
       // Arms
       ctx.save();
-      ctx.translate(bodyX, bodyY - bodyHeight / 2); // Set origin to body
-      ctx.rotate(armAngle); // Rotate arm based on the angle
+      ctx.translate(bodyX, bodyY - bodyHeight / 2); 
+      ctx.rotate(armAngle);
       ctx.fillStyle = '#00ff00';
-      ctx.fillRect(0, -limbLength / 2, limbLength, 10); // Draw arm
+      ctx.fillRect(0, -limbLength / 2, limbLength, 10); 
       ctx.restore();
 
       // Legs
       ctx.save();
-      ctx.translate(bodyX, bodyY + bodyHeight / 2); // Set origin to body
-      ctx.rotate(legAngle); // Rotate leg based on the angle
+      ctx.translate(bodyX, bodyY + bodyHeight / 2); 
+      ctx.rotate(legAngle); 
       ctx.fillStyle = '#00ff00';
-      ctx.fillRect(0, limbLength / 2, limbLength, 10); // Draw leg
+      ctx.fillRect(0, limbLength / 2, limbLength, 10);
       ctx.restore();
     }
-
-    // Simple reward function
     function reward() {
       if (bodyY < canvas.height - 100) {
-        isFalling = true; // Penalty if falling
+        isFalling = true; 
         return -1;
       } else if (velocity > 1) {
-        return 1; // Reward for moving forward
+        return 1; 
       }
       return 0;
     }
 
-    // Update state and move character
+
     function updateCharacter(action) {
-      // Apply the action to adjust angles
+
       armAngle += action[0];
       legAngle += action[1];
       
-      // Update the body position based on velocity (forward movement)
+     
       velocity += 0.1;
       bodyX += velocity;
 
-      // Check for reward/penalty
       const currentReward = reward();
 
       return currentReward;

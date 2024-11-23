@@ -3,123 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Generator</title>
+    <title>3D Sculpting Demo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 100%;
-            max-width: 600px;
-        }
-
-        input[type="text"] {
-            width: 80%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #20c997;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #17a589;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            margin-top: 20px;
-        }
-
-        .message {
-            font-size: 14px;
-            color: #777;
-            margin-top: 10px;
-        }
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1>AI Image Generator</h1>
-        <input type="text" id="textPrompt" placeholder="Enter description here">
-        <br>
-        <button onclick="generateImage()">Generate Image</button>
-        <br><br>
-        <img id="outputImage" alt="Generated Image">
-        <p class="message" id="message"></p>
-    </div>
-
     <script>
-    async function generateImage() {
-        const prompt = document.getElementById("textPrompt").value;
-        const messageElement = document.getElementById("message");
-        const outputImageElement = document.getElementById("outputImage");
 
-        if (!prompt) {
-            messageElement.textContent = "Please enter a prompt!";
-            return;
-        }
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-        messageElement.textContent = "Generating image... Please wait.";
-        outputImageElement.src = "";  // Clear any previous image
+      
+        const light = new THREE.PointLight(0xFFFFFF, 1, 100);
+        light.position.set(10, 10, 10);
+        scene.add(light);
 
-        try {
-            // Send request to the backend PHP script (ai.php)
-            const response = await fetch('ai.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ prompt })
-            });
+       
+        const geometry = new THREE.SphereGeometry(5, 32, 32);
+        const material = new THREE.MeshPhongMaterial({ color: 0x0077ff, wireframe: true });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
 
-            const contentType = response.headers.get("Content-Type");
-            if (contentType && contentType.includes("application/json")) {
-                const data = await response.json();
 
-                if (data.images && data.images.length > 0) {
-                    const imageUrl = data.images[0];  // Assuming the AI API returns an image URL
-                    outputImageElement.src = imageUrl;
-                    messageElement.textContent = "Image generated successfully!";
-                } else if (data.error) {
-                    messageElement.textContent = "Error: " + data.error;
-                } else {
-                    messageElement.textContent = "No image generated. Please try again.";
+        camera.position.z = 15;
+
+
+        let mouseX = 0, mouseY = 0;
+        let isSculpting = false;
+
+
+        window.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+
+        window.addEventListener('mousedown', () => isSculpting = true);
+        window.addEventListener('mouseup', () => isSculpting = false);
+
+        // Function to manipulate geometry based on mouse movement
+        function sculpt() {
+            if (isSculpting) {
+                const vertices = sphere.geometry.attributes.position.array;
+                const radius = sphere.geometry.parameters.radius;
+
+                for (let i = 0; i < vertices.length; i += 3) {
+                    const x = vertices[i];
+                    const y = vertices[i + 1];
+                    const z = vertices[i + 2];
+
+                    // Apply deformation based on mouse position
+                    const distance = Math.sqrt(x * x + y * y + z * z);
+                    const factor = Math.sin(mouseX * Math.PI) * 0.5; // example interaction based on mouseX
+
+                    // Push and pull vertices in or out
+                    vertices[i] += factor * Math.sin(mouseY * Math.PI);  // Sculpt effect along X
+                    vertices[i + 1] += factor * Math.cos(mouseX * Math.PI);  // Sculpt effect along Y
                 }
-            } else {
-                messageElement.textContent = "Unexpected response format.";
-                console.error("Unexpected response:", await response.text());
-            }
-        } catch (error) {
-            messageElement.textContent = "Error generating image. Please try again later.";
-            console.error("Error:", error);
-        }
-    }
-    </script>
 
+                // Inform Three.js that the geometry has changed
+                sphere.geometry.attributes.position.needsUpdate = true;
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            sculpt(); // Apply sculpting effect
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
 </body>
 </html>

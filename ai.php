@@ -42,13 +42,14 @@ Render.run(render);
 const runner = Runner.create();
 Runner.run(runner, engine);
 
-// Add a draggable cube
+// Add a draggable cube (with a cubic shape)
 const cube = Bodies.rectangle(400, 200, 100, 100, {
     render: {
         fillStyle: "blue",
         strokeStyle: "black",
         lineWidth: 2
-    }
+    },
+    density: 0.04, // Adds a bit of weight to the cube
 });
 Composite.add(world, cube);
 
@@ -60,6 +61,14 @@ const ground = Bodies.rectangle(window.innerWidth / 2, window.innerHeight - 50, 
     }
 });
 Composite.add(world, ground);
+
+// Add barriers (walls) to prevent the cube from going off the screen
+const leftWall = Bodies.rectangle(0, window.innerHeight / 2, 50, window.innerHeight, { isStatic: true });
+const rightWall = Bodies.rectangle(window.innerWidth, window.innerHeight / 2, 50, window.innerHeight, { isStatic: true });
+const topWall = Bodies.rectangle(window.innerWidth / 2, 0, window.innerWidth, 50, { isStatic: true });
+const bottomWall = Bodies.rectangle(window.innerWidth / 2, window.innerHeight, window.innerWidth, 50, { isStatic: true });
+
+Composite.add(world, [leftWall, rightWall, topWall, bottomWall]);
 
 // Add Mouse Control
 const mouse = Mouse.create(render.canvas);
@@ -86,6 +95,12 @@ window.addEventListener("resize", () => {
         { x: window.innerWidth, y: window.innerHeight },
         { x: 0, y: window.innerHeight }
     ]);
+
+    // Update the walls position on resize
+    Matter.Body.setPosition(leftWall, { x: 0, y: window.innerHeight / 2 });
+    Matter.Body.setPosition(rightWall, { x: window.innerWidth, y: window.innerHeight / 2 });
+    Matter.Body.setPosition(topWall, { x: window.innerWidth / 2, y: 0 });
+    Matter.Body.setPosition(bottomWall, { x: window.innerWidth / 2, y: window.innerHeight });
 });
 
     </script>
