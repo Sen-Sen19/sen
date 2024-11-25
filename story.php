@@ -72,7 +72,6 @@ function generateStory() {
     const object = chance.animal();
 
     const storyText = `You find yourself in a mysterious place, perhaps a city called ${location}. You see a person named ${character} who seems to be ${action} with a strange ${object}. What do you do?`;
-
     const choices = [
         { text: `Approach ${character}`, nextStory: 1 },
         { text: `Run away from the ${object}`, nextStory: 2 },
