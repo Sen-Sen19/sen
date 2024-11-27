@@ -87,9 +87,8 @@
         // JavaScript logic for 2048 game
         let board = [];
         let score = 0;
-        const size = 3; // Size of the board (3x3)
+        const size = 3;
 
-        // Initialize the game board
         function initializeBoard() {
             for (let i = 0; i < size; i++) {
                 board[i] = [];
@@ -102,7 +101,6 @@
             updateBoard();
         }
 
-        // Function to add a new tile (either 2 or 4) to a random empty cell
         function addNewTile() {
             let options = [];
             for (let i = 0; i < size; i++) {
