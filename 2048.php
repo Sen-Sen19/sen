@@ -47,8 +47,8 @@
             justify-content: center;
             align-items: center;
             border-radius: 5px;
-            width: 70px; /* Set width and height to create square tiles */
-            height: 70px; /* Set width and height to create square tiles */
+            width: 70px;
+            height: 70px;
         }
         
         .game-info {
@@ -73,8 +73,6 @@
     <div class="game-container">
     <p> </p>
         <div class="game-board" id="gameBoard">
-            
-            <!-- Grid cells will be dynamically generated here -->
         </div>
         
         <div class="game-info">
@@ -84,7 +82,6 @@
     </div>
 
     <script>
-        // JavaScript logic for 2048 game
         let board = [];
         let score = 0;
         const size = 3;
@@ -116,7 +113,7 @@
             }
         }
 
-        // Function to update the game board and UI
+      
         function updateBoard() {
             let gameBoard = document.getElementById('gameBoard');
             gameBoard.innerHTML = '';

@@ -1,9 +1,9 @@
 <?php
-$serverName = "172.25.115.167\SQLEXPRESS";
+$serverName = "172.25.114.171\SQLEXPRESS";
 $connectionOptions = array(
-    "Database" => "live_mrcs_db",
+    "Database" => "my_template_db",
     "Uid" => "sa",
-    "PWD" => '#Sy$temGr0^p|115167'
+    "PWD" => "SystemGroup2018"
 );
 
  
