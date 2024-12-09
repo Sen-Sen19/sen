@@ -86,6 +86,8 @@ ball.addEventListener('mousedown', function(e) {
 
 
 
+
+
 document.addEventListener('mousemove', function(e) {
   if (isDragging) {
     let deltaX = e.clientX - previousX;
